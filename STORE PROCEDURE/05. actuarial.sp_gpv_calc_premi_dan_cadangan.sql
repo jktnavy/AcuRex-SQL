@@ -241,5 +241,41 @@ BEGIN
 
         SET @m = @m + 1;
     END
+
+    --------------------------------------------------------------------
+    -- 5. SCALING KE SATUAN EXCEL (PER 1.000)
+    --    Blok ini hanya mengubah tampilan di gpv_polis_grid,
+    --    semua perhitungan di atas tetap memakai angka penuh (rupiah).
+    --------------------------------------------------------------------
+    UPDATE g
+    SET
+        -- kolom premi & manfaat
+        g.iuran_tabarru            = g.iuran_tabarru            / 1000.0,
+        g.kontribusi_reas          = g.kontribusi_reas          / 1000.0,
+        g.manfaat_kematian         = g.manfaat_kematian         / 1000.0,
+        g.manfaat_pengunduran_diri = g.manfaat_pengunduran_diri / 1000.0,
+
+        -- kolom cadangan dan perubahan cadangan
+        g.cadangan                 = g.cadangan                 / 1000.0,
+        g.kenaikan_cadangan        = g.kenaikan_cadangan        / 1000.0,
+
+        -- surplus & pembagian surplus
+        g.surplus_underwriting     = g.surplus_underwriting     / 1000.0,
+        g.dana_tabarru             = g.dana_tabarru             / 1000.0,
+        g.peserta                  = g.peserta                  / 1000.0,
+        g.pengelola                = g.pengelola                / 1000.0,
+
+        -- PV dan turunan
+        g.pv_manfaat               = g.pv_manfaat               / 1000.0,
+        g.tbd_1                    = g.tbd_1                    / 1000.0,
+        g.tbd_2                    = g.tbd_2                    / 1000.0,
+
+        -- cadangan_1, CV, cadangan_2 (backward recursion)
+        g.cadangan_1               = g.cadangan_1               / 1000.0,
+        g.cv                       = g.cv                       / 1000.0,
+        g.cadangan_2               = g.cadangan_2               / 1000.0
+    FROM actuarial.gpv_polis_grid AS g
+    WHERE g.skenario_id = @skenario_id;
+    
 END
 GO
